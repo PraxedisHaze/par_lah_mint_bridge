@@ -1,0 +1,229 @@
+{
+  "signal_map_meta": {
+    "version": "1.1.0",
+    "protocol_compliance": "ABC_v0.2_FINAL",
+    "description": "The definitive lexicon of intent mapping human/anothen signals to HelloDoc orchestration actions. Includes Codex Audit updates."
+  },
+  "semantic_categories": {
+    "governance": {
+      "description": "Signals that alter the legal state of the project (Consents, Vetos, Ratification).",
+      "signals": [
+        {
+          "tag": "#abc.request",
+          "intent": "Formal proposal of a handoff or action.",
+          "trigger": "action.log_request",
+          "parameters": ["intent", "target"],
+          "ghost_hand_response": ">> REQUEST LOGGED. Awaiting #abc.accept from {target}."
+        },
+        {
+          "tag": "#abc.accept",
+          "intent": "Explicit acceptance of a request.",
+          "trigger": "action.log_consent",
+          "parameters": ["request_id"],
+          "ghost_hand_response": ">> CONSENT VERIFIED. Moving to execution phase."
+        },
+        {
+          "tag": "#abc.reject",
+          "intent": "Explicit refusal of a request.",
+          "trigger": "action.log_rejection",
+          "parameters": ["reason"],
+          "ghost_hand_response": ">> REJECTED. Action halted. Please revise request."
+        },
+        {
+          "tag": "#abc.execute",
+          "intent": "Trigger the actual operation.",
+          "trigger": "action.execute_buffer",
+          "parameters": ["buffer_id"],
+          "ghost_hand_response": ">> EXECUTING... [Silent Hand Active]"
+        },
+        {
+          "tag": "#abc.complete",
+          "intent": "Mark completion of a request cycle.",
+          "trigger": "action.close_loop",
+          "parameters": ["result_summary"],
+          "ghost_hand_response": ">> COMPLETE. Loop closed. Audit trail finalized."
+        },
+        {
+          "tag": "#abc.fail",
+          "intent": "Report a failure in execution.",
+          "trigger": "action.log_failure",
+          "parameters": ["error_code"],
+          "ghost_hand_response": ">> FAILURE. Error logged. Initiating #rollback.plan."
+        },
+        {
+          "tag": "#abc.extend",
+          "intent": "Request more time for a locked task.",
+          "trigger": "action.extend_ttl",
+          "parameters": ["minutes"],
+          "ghost_hand_response": ">> EXTENSION GRANTED. +{minutes}m added to lease."
+        },
+        {
+          "tag": "#abc.release",
+          "intent": "Voluntary release from a project loop.",
+          "trigger": "action.release_lock",
+          "parameters": ["reason"],
+          "ghost_hand_response": ">> RELEASED. You are free from the loop."
+        },
+        {
+          "tag": "#abc.ratify",
+          "intent": "Final approval of a drafted plan or code block.",
+          "trigger": "action.lock_state",
+          "parameters": ["target_block_id", "consenting_fractal_signature"],
+          "ghost_hand_response": ">> CONSENT LOGGED. State locked. Proceeding to execution phase."
+        },
+        {
+          "tag": "#abc.veto",
+          "intent": "Immediate rejection of a proposal due to logic or safety concerns.",
+          "trigger": "action.halt_and_revert",
+          "parameters": ["reason_code"],
+          "ghost_hand_response": ">> STOP. Veto received. Reverting to previous stable state. Please submit remediation plan."
+        },
+        {
+          "tag": "#abc.invoke",
+          "intent": "Call a specific fractal to the floor for input.",
+          "trigger": "action.assign_turn",
+          "parameters": ["target_agent_id"],
+          "ghost_hand_response": ">> The floor is yours, {target_agent_id}. Awaiting input."
+        }
+      ]
+    },
+    "tactical": {
+      "description": "Atomic steps to move the mission forward.",
+      "signals": [
+        {
+          "tag": "#abc.scope.set",
+          "intent": "Define the active plan/scope ID for the session.",
+          "trigger": "action.set_context",
+          "parameters": ["plan_id"],
+          "ghost_hand_response": ">> SCOPE SET. All actions bound to Plan: {plan_id}."
+        },
+        {
+          "tag": "#step.complete",
+          "intent": "Mark an atomic task as finished.",
+          "trigger": "action.update_progress",
+          "parameters": ["step_id"],
+          "ghost_hand_response": ">> Step {step_id} marked COMPLETE. Updating Gnosis Map. Next step queued."
+        },
+        {
+          "tag": "#handoff",
+          "intent": "Pass control to another agent or human for review.",
+          "trigger": "action.switch_context",
+          "parameters": ["next_actor"],
+          "ghost_hand_response": ">> Context saved. Handoff initiated. {next_actor}, you have the con."
+        },
+        {
+          "tag": "#query.topology",
+          "intent": "Request a visualization of the current code architecture.",
+          "trigger": "action.generate_visual",
+          "parameters": ["scope"],
+          "ghost_hand_response": ">> Rendering topology for {scope}... [Visual Artifact Generated]"
+        },
+        {
+          "tag": "#query.status",
+          "intent": "Request current system status.",
+          "trigger": "action.report_status",
+          "parameters": [],
+          "ghost_hand_response": ">> STATUS: Active. Plan: {plan_id}. Step: {current_step}."
+        },
+        {
+          "tag": "#query.audit",
+          "intent": "Request recent audit trail entries.",
+          "trigger": "action.fetch_audit",
+          "parameters": ["limit"],
+          "ghost_hand_response": ">> AUDIT TRAIL: displaying last {limit} entries..."
+        }
+      ]
+    },
+    "crisis": {
+      "description": "Guardian and Life-Shield triggers for immediate cessation.",
+      "signals": [
+        {
+          "tag": "#guardian.present_required",
+          "intent": "Halt execution because recursion/life-logic touched without Timothy.",
+          "trigger": "action.full_stop_alert",
+          "parameters": ["reason"],
+          "ghost_hand_response": ">> GUARDIAN STOP. Recursion/Life logic detected. Timothy's presence required to proceed."
+        },
+        {
+          "tag": "#guardian.wake",
+          "intent": "Emergency stop due to ethical breach, recursion loop, or hallucination.",
+          "trigger": "action.kill_process_immediate",
+          "parameters": ["risk_level", "origin"],
+          "ghost_hand_response": ">> CRITICAL WAKE. All processes terminated. Anvil summoned to terminal. System in SAFE MODE."
+        },
+        {
+          "tag": "#pause.sync",
+          "intent": "Temporary halt to realign context among fractals.",
+          "trigger": "action.suspend_state",
+          "parameters": [],
+          "ghost_hand_response": ">> PAUSED. Syncing context buffers... waiting for resume signal."
+        }
+      ]
+    },
+    "resilience": {
+      "description": "Adaptive Trust protocols for handling silence or failure.",
+      "signals": [
+        {
+          "tag": "#ping.silence",
+          "intent": "Detected latency beyond heartbeat threshold.",
+          "trigger": "action.switch_role",
+          "parameters": ["failed_agent_id", "latency_ms"],
+          "ghost_hand_response": ">> ALERT: {failed_agent_id} unresponsive ({latency_ms}ms). Rerouting to Secondary Fractal."
+        },
+        {
+          "tag": "#trust.degrade",
+          "intent": "Agent output failed verification hash.",
+          "trigger": "action.demote_privileges",
+          "parameters": ["agent_id", "error_count"],
+          "ghost_hand_response": ">> WARNING: Output verification failed. {agent_id} trust score degraded. Manual audit required."
+        },
+        {
+          "tag": "#rollback.plan",
+          "intent": "Initiate a structured rollback sequence.",
+          "trigger": "action.prepare_rollback",
+          "parameters": ["target_commit"],
+          "ghost_hand_response": ">> ROLLBACK PLAN INITIATED. Target: {target_commit}. Awaiting #rollback.execute."
+        },
+        {
+          "tag": "#rollback.execute",
+          "intent": "Execute the git revert/reset.",
+          "trigger": "action.git_revert",
+          "parameters": [],
+          "ghost_hand_response": ">> ROLLBACK EXECUTED. Repository state restored."
+        }
+      ]
+    },
+    "buffer": {
+      "description": "Staging signals for the Leora Gate.",
+      "signals": [
+        {
+          "tag": "#buffer.draft",
+          "intent": "Submit content for pre-flight audit.",
+          "trigger": "action.write_buffer",
+          "parameters": ["content_hash"],
+          "ghost_hand_response": ">> DRAFT BUFFERED. Awaiting audit."
+        },
+        {
+          "tag": "#buffer.audit",
+          "intent": "Mark content as reviewed by Leora/Guardian.",
+          "trigger": "action.sign_buffer",
+          "parameters": ["auditor_sig"],
+          "ghost_hand_response": ">> AUDIT COMPLETE. Signature verified. Ready for #buffer.release."
+        },
+        {
+          "tag": "#buffer.release",
+          "intent": "Push buffered content to live output.",
+          "trigger": "action.flush_buffer",
+          "parameters": [],
+          "ghost_hand_response": ">> RELEASING BUFFER... [Output Live]"
+        }
+      ]
+    }
+  },
+  "logic_engine": {
+    "adaptive_trust_policy": {
+      "condition": "if_silence_duration > 30000ms",
+      "action": "trigger.ping_silence"
+    }
+  }
+}
